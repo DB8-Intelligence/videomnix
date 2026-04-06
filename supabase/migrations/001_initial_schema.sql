@@ -1,4 +1,4 @@
--- ChannelOS · Schema inicial
+-- Videomnix · Schema inicial
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE users (

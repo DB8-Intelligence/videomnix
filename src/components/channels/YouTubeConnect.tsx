@@ -53,7 +53,7 @@ export function YouTubeConnect({
       <div className="text-center">
         <h3 className="font-semibold">Conectar canal YouTube</h3>
         <p className="mt-1 text-sm text-muted-foreground">
-          Autorize o ChannelOS a fazer upload de vídeos no seu canal.
+          Autorize o Videomnix a fazer upload de vídeos no seu canal.
         </p>
       </div>
       <Button onClick={handleConnect} disabled={loading} variant="destructive">
