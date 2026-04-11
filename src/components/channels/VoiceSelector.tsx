@@ -32,8 +32,8 @@ export function VoiceSelector({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           script: language === 'pt-BR'
-            ? 'Olá! Este é um teste de voz para o seu canal no ChannelOS.'
-            : 'Hello! This is a voice test for your ChannelOS channel.',
+            ? 'Olá! Este é um teste de voz para o seu canal no Videomnix.'
+            : 'Hello! This is a voice test for your Videomnix channel.',
           voice_id: voiceId,
           niche,
           language,

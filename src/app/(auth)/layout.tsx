@@ -8,9 +8,9 @@ export default function AuthLayout({
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold text-xl">
-            C
+            V
           </div>
-          <h1 className="mt-4 text-2xl font-bold">ChannelOS</h1>
+          <h1 className="mt-4 text-2xl font-bold">Videomnix</h1>
           <p className="text-muted-foreground">
             Automação de canais dark YouTube
           </p>

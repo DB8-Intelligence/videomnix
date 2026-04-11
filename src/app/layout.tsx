@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "ChannelOS — Automação de Canais YouTube",
+  title: "Videomnix — Automação de Canais YouTube",
   description: "SaaS de automação de canais dark YouTube para criadores solo brasileiros",
 }
 

@@ -1,12 +1,12 @@
-# CHANNELOS — PROJECT MEMORY & AGENT INSTRUCTIONS
+# VIDEOMNIX — PROJECT MEMORY & AGENT INSTRUCTIONS
 
 ## O QUE É ESTE PRODUTO
 SaaS de automação de canais dark YouTube para criadores solo brasileiros.
-channelos.app · Next.js 14 · Supabase · Vercel
+videomnix.com · Next.js 14 · Supabase · Vercel
 
 ## STACK — NUNCA ALTERAR SEM APROVAÇÃO
 Frontend:  Next.js 14 (App Router) + TypeScript + Tailwind CSS + shadcn/ui
-Database:  Supabase exclusivo ChannelOS (não compartilhado com NexoOmnix)
+Database:  Supabase exclusivo Videomnix (não compartilhado com NexoOmnix)
 Engine IA: db8-agent Railway — https://api.db8intelligence.com.br
            NUNCA chamar Anthropic/ElevenLabs/Fal.ai diretamente daqui
            SEMPRE via db8-agent com X-Service-Key
@@ -18,11 +18,11 @@ Este produto faz parte do ecossistema:
 - db8-agent    → engine compartilhada (Railway/FastAPI/Python)
 - NexoOmnix    → plataforma multi-nicho (Supabase separado)
 - ImobCreator  → sendo migrado para dentro do NexoOmnix
-- ChannelOS    → este produto (Supabase separado)
+- Videomnix    → este produto (Supabase separado)
 - BookAgent    → futuro
 
 ## VARIÁVEIS DE AMBIENTE
-NEXT_PUBLIC_SUPABASE_URL       → Supabase exclusivo ChannelOS
+NEXT_PUBLIC_SUPABASE_URL       → Supabase exclusivo Videomnix
 NEXT_PUBLIC_SUPABASE_ANON_KEY  → Supabase anon key
 SUPABASE_SERVICE_ROLE_KEY      → server-side only
 DB8_AGENT_URL                  → https://api.db8intelligence.com.br
