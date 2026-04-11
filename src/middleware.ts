@@ -35,8 +35,18 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl
 
-  // Allow webhook routes without auth
-  if (pathname.startsWith('/api/webhooks')) {
+  // Allow webhook routes and Stripe webhooks without auth
+  if (pathname.startsWith('/api/webhooks') || pathname.startsWith('/api/stripe/webhook')) {
+    return supabaseResponse
+  }
+
+  // Allow landing page without auth
+  if (pathname === '/') {
+    return supabaseResponse
+  }
+
+  // Allow cron routes (secured by CRON_SECRET header)
+  if (pathname.startsWith('/api/cron')) {
     return supabaseResponse
   }
 
