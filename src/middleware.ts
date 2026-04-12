@@ -35,8 +35,18 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl
 
-  // Allow webhook routes without auth
-  if (pathname.startsWith('/api/webhooks')) {
+  // Rotas públicas (sem auth)
+  const publicRoutes = [
+    '/api/webhooks',   // n8n + hotmart
+    '/api/youtube/auth',
+  ]
+  const isPublicRoute = publicRoutes.some((r) => pathname.startsWith(r))
+  if (isPublicRoute) {
+    return supabaseResponse
+  }
+
+  // Landing page é pública
+  if (pathname === '/') {
     return supabaseResponse
   }
 
@@ -44,8 +54,7 @@ export async function middleware(request: NextRequest) {
   if (
     !user &&
     !pathname.startsWith('/login') &&
-    !pathname.startsWith('/cadastro') &&
-    !pathname.startsWith('/api/youtube/auth')
+    !pathname.startsWith('/cadastro')
   ) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'

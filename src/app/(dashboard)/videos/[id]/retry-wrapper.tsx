@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { RotateCw, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 interface RetryButtonWrapperProps {
   contentId: string
@@ -17,11 +18,17 @@ export function RetryButtonWrapper({ contentId }: RetryButtonWrapperProps) {
   const handleRetry = async () => {
     setLoading(true)
     const supabase = createClient()
-    await supabase
+    const { error } = await supabase
       .from('content_queue')
       .update({ status: 'pending', retry_count: 0, error_log: null })
       .eq('id', contentId)
-    router.refresh()
+
+    if (error) {
+      toast.error('Erro ao reprocessar', { description: error.message })
+    } else {
+      toast.success('Vídeo reenviado para a fila')
+      router.refresh()
+    }
     setLoading(false)
   }
 

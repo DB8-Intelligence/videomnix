@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { fetchTrending } from '@/lib/db8-agent'
+import { rateLimitByUser } from '@/lib/rate-limit'
+import { canGenerateVideo } from '@/lib/plan-limits'
 
 interface TriggerRouteContext {
   params: Promise<{ id: string }>
@@ -14,6 +16,24 @@ export async function POST(request: NextRequest, context: TriggerRouteContext) {
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Rate limiting
+    const { allowed: rateLimitOk } = rateLimitByUser(user.id, 'trigger')
+    if (!rateLimitOk) {
+      return NextResponse.json(
+        { error: 'Muitas requisições. Aguarde um momento.' },
+        { status: 429 }
+      )
+    }
+
+    // Plan limits
+    const planCheck = await canGenerateVideo(user.id)
+    if (!planCheck.allowed) {
+      return NextResponse.json(
+        { error: planCheck.reason, used: planCheck.used, limit: planCheck.limit },
+        { status: 403 }
+      )
     }
 
     // Get user profile
@@ -89,7 +109,11 @@ export async function POST(request: NextRequest, context: TriggerRouteContext) {
       })
     }
 
-    return NextResponse.json({ queued: true, queue_id: queueItem.id })
+    return NextResponse.json({
+      queued: true,
+      queue_id: queueItem.id,
+      usage: { used: (planCheck.used || 0) + 1, limit: planCheck.limit },
+    })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error'
     return NextResponse.json({ error: message }, { status: 500 })

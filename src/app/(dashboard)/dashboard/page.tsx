@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Tv, Film, Eye, DollarSign, Plus, Zap } from 'lucide-react'
 import Link from 'next/link'
+import { UsageWidget } from '@/components/dashboard/UsageWidget'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -37,14 +38,18 @@ export default async function DashboardPage() {
     .select('*')
     .eq('user_id', profile.id)
 
+  // Contar vídeos do mês para widget de uso
+  const now = new Date()
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
+  const { count: videosThisMonth } = await supabase
+    .from('content_queue')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', profile.id)
+    .gte('created_at', startOfMonth)
+
   const totalChannels = channels?.length || 0
   const totalViews = performance?.reduce((sum, p) => sum + Number(p.total_views || 0), 0) || 0
   const totalRevenue = performance?.reduce((sum, p) => sum + Number(p.total_revenue_usd || 0), 0) || 0
-  const thisMonthVideos = recentQueue?.filter((q) => {
-    const created = new Date(q.created_at)
-    const now = new Date()
-    return created.getMonth() === now.getMonth() && created.getFullYear() === now.getFullYear()
-  }).length || 0
 
   return (
     <div className="space-y-6">
@@ -60,8 +65,8 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* KPI Row */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {/* KPI Row + Usage */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total de Canais</CardTitle>
@@ -77,7 +82,7 @@ export default async function DashboardPage() {
             <Film className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{thisMonthVideos}</div>
+            <div className="text-2xl font-bold">{videosThisMonth || 0}</div>
           </CardContent>
         </Card>
         <Card>
@@ -100,6 +105,15 @@ export default async function DashboardPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Usage Widget */}
+        <UsageWidget
+          videosUsed={videosThisMonth || 0}
+          videosLimit={profile.videos_per_month}
+          channelsUsed={totalChannels}
+          channelsLimit={profile.channels_limit}
+          plan={profile.plan}
+        />
       </div>
 
       {/* Channels Grid */}
@@ -141,7 +155,9 @@ export default async function DashboardPage() {
               <Card key={item.id}>
                 <CardContent className="flex items-center justify-between py-3">
                   <div>
-                    <p className="font-medium">{item.title || item.topic}</p>
+                    <Link href={`/videos/${item.id}`} className="font-medium hover:underline">
+                      {item.title || item.topic}
+                    </Link>
                     <p className="text-sm text-muted-foreground">
                       {new Date(item.created_at).toLocaleDateString('pt-BR')}
                     </p>

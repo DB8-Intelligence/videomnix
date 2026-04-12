@@ -20,6 +20,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import { toast } from 'sonner'
 import type { Channel } from '@/types/database'
 
 export default function ConfigurarCanal() {
@@ -58,7 +59,7 @@ export default function ConfigurarCanal() {
   const handleSave = async () => {
     setSaving(true)
     const supabase = createClient()
-    await supabase
+    const { error } = await supabase
       .from('channels')
       .update({
         name,
@@ -66,25 +67,37 @@ export default function ConfigurarCanal() {
         videos_per_week: videosPerWeek,
       })
       .eq('id', id)
+
     setSaving(false)
+
+    if (error) {
+      toast.error('Erro ao salvar', { description: error.message })
+    } else {
+      toast.success('Canal atualizado!')
+    }
   }
 
   const handleToggleActive = async () => {
     if (!channel) return
     const supabase = createClient()
+    const newState = !channel.is_active
     const { data } = await supabase
       .from('channels')
-      .update({ is_active: !channel.is_active })
+      .update({ is_active: newState })
       .eq('id', id)
       .select()
       .single()
-    if (data) setChannel(data)
+    if (data) {
+      setChannel(data)
+      toast.success(newState ? 'Canal ativado' : 'Canal pausado')
+    }
   }
 
   const handleDelete = async () => {
     if (deleteConfirm !== channel?.name) return
     const supabase = createClient()
     await supabase.from('channels').delete().eq('id', id)
+    toast.success('Canal excluído')
     router.push('/canais')
   }
 

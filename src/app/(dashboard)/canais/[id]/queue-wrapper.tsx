@@ -5,6 +5,7 @@ import { TriggerButton } from '@/components/videos/TriggerButton'
 import { Button } from '@/components/ui/button'
 import { TrendingUp, Loader2 } from 'lucide-react'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 interface QueueTableWrapperProps {
   channelId: string
@@ -16,13 +17,21 @@ export function QueueTableWrapper({ channelId }: QueueTableWrapperProps) {
   const handleFetchTrending = async () => {
     setFetchingTrending(true)
     try {
-      await fetch('/api/db8/fetch-trending', {
+      const res = await fetch('/api/db8/fetch-trending', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ channel_id: channelId }),
       })
+      const data = await res.json()
+
+      if (!res.ok) {
+        toast.error('Erro ao buscar trending', { description: data.error })
+        return
+      }
+
+      toast.success(`${data.queued} tópicos adicionados à fila`)
     } catch {
-      // Failed to fetch trending
+      toast.error('Falha na conexão com o servidor')
     } finally {
       setFetchingTrending(false)
     }
