@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { generateScript } from '@/lib/db8-agent'
+import { rateLimitByUser } from '@/lib/rate-limit'
 
 export async function POST(request: NextRequest) {
   try {
@@ -8,6 +9,11 @@ export async function POST(request: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { allowed } = rateLimitByUser(user.id, 'generate-script')
+    if (!allowed) {
+      return NextResponse.json({ error: 'Muitas requisições. Aguarde.' }, { status: 429 })
     }
 
     const body = await request.json()
@@ -51,6 +57,19 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(result)
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error'
+
+    // Marcar como failed se tiver content_id
+    try {
+      const body = await request.clone().json().catch(() => ({}))
+      if (body.content_id) {
+        const supabase = await createClient()
+        await supabase
+          .from('content_queue')
+          .update({ status: 'failed', error_log: message })
+          .eq('id', body.content_id)
+      }
+    } catch { /* ignore cleanup errors */ }
+
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }

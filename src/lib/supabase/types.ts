@@ -22,8 +22,6 @@ export interface Database {
           whatsapp: string | null
           timezone: string
           onboarding_done: boolean
-          stripe_customer_id: string | null
-          stripe_subscription_id: string | null
           created_at: string
         }
         Insert: {
@@ -38,8 +36,6 @@ export interface Database {
           whatsapp?: string | null
           timezone?: string
           onboarding_done?: boolean
-          stripe_customer_id?: string | null
-          stripe_subscription_id?: string | null
           created_at?: string
         }
         Update: {
@@ -54,8 +50,6 @@ export interface Database {
           whatsapp?: string | null
           timezone?: string
           onboarding_done?: boolean
-          stripe_customer_id?: string | null
-          stripe_subscription_id?: string | null
           created_at?: string
         }
       }

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Loader2, Zap } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface TriggerButtonProps {
   channelId: string
@@ -18,10 +19,19 @@ export function TriggerButton({ channelId, onTriggered }: TriggerButtonProps) {
       const res = await fetch(`/api/channels/${channelId}/trigger`, {
         method: 'POST',
       })
-      if (!res.ok) throw new Error('Failed to trigger')
+      const data = await res.json()
+
+      if (!res.ok) {
+        toast.error('Erro ao gerar vídeo', { description: data.error })
+        return
+      }
+
+      toast.success('Vídeo adicionado à fila!', {
+        description: 'O pipeline de produção foi iniciado.',
+      })
       onTriggered?.()
     } catch {
-      // Trigger failed
+      toast.error('Falha na conexão com o servidor')
     } finally {
       setLoading(false)
     }

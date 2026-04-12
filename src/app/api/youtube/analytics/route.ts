@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { ensureValidToken } from '@/lib/youtube'
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,7 +23,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'YouTube not connected' }, { status: 400 })
     }
 
-    const oauth = channel.youtube_oauth as { access_token: string }
+    // Garantir token válido (refresh se expirado)
+    const oauth = await ensureValidToken(
+      channel_id,
+      channel.youtube_oauth as { access_token: string; refresh_token: string; expires_at: number }
+    )
 
     // Get posted videos
     const { data: postedVideos } = await supabase

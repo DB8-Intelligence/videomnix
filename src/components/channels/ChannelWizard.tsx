@@ -13,6 +13,7 @@ import { createClient } from '@/lib/supabase/client'
 import { NICHES, type NicheKey } from '@/lib/niche-config'
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { toast } from 'sonner'
 
 const STEPS = [
   { title: 'Nicho', description: 'Escolha o nicho do canal' },
@@ -49,8 +50,8 @@ export function ChannelWizard() {
     switch (step) {
       case 0: return !!niche && !!name.trim()
       case 1: return postingTimes.length > 0
-      case 2: return true // voice is optional
-      case 3: return true // youtube connection is optional in wizard
+      case 2: return true
+      case 3: return true
       default: return false
     }
   }
@@ -78,6 +79,7 @@ export function ChannelWizard() {
       .single()
 
     if (error) {
+      toast.error('Erro ao criar canal', { description: error.message })
       setSaving(false)
       return
     }
@@ -88,6 +90,7 @@ export function ChannelWizard() {
       .update({ onboarding_done: true })
       .eq('id', profile.id)
 
+    toast.success('Canal criado!', { description: `${name} está pronto para produzir vídeos.` })
     router.push(`/canais/${data.id}`)
   }
 

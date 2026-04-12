@@ -7,9 +7,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { LogOut, User } from 'lucide-react'
+import { LogOut, User, Settings } from 'lucide-react'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
+import Link from 'next/link'
 
 export function Topbar() {
   const { profile, signOut } = useAuth()
@@ -26,7 +29,9 @@ export function Topbar() {
   return (
     <header className="flex h-16 items-center justify-between border-b bg-card px-6">
       <div />
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
+        <ThemeToggle />
+
         <Badge variant="secondary" className="capitalize">
           {profile?.plan || 'trial'}
         </Badge>
@@ -43,10 +48,19 @@ export function Topbar() {
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>
-              <User className="mr-2 h-4 w-4" />
-              Perfil
+            <DropdownMenuItem asChild>
+              <Link href="/configuracoes">
+                <User className="mr-2 h-4 w-4" />
+                Perfil
+              </Link>
             </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/configuracoes">
+                <Settings className="mr-2 h-4 w-4" />
+                Configurações
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
             <DropdownMenuItem onClick={signOut}>
               <LogOut className="mr-2 h-4 w-4" />
               Sair

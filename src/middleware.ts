@@ -35,18 +35,18 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl
 
-  // Allow webhook routes and Stripe webhooks without auth
-  if (pathname.startsWith('/api/webhooks') || pathname.startsWith('/api/stripe/webhook')) {
+  // Rotas públicas (sem auth)
+  const publicRoutes = [
+    '/api/webhooks',   // n8n + hotmart
+    '/api/youtube/auth',
+  ]
+  const isPublicRoute = publicRoutes.some((r) => pathname.startsWith(r))
+  if (isPublicRoute) {
     return supabaseResponse
   }
 
-  // Allow landing page without auth
+  // Landing page é pública
   if (pathname === '/') {
-    return supabaseResponse
-  }
-
-  // Allow cron routes (secured by CRON_SECRET header)
-  if (pathname.startsWith('/api/cron')) {
     return supabaseResponse
   }
 
@@ -54,8 +54,7 @@ export async function middleware(request: NextRequest) {
   if (
     !user &&
     !pathname.startsWith('/login') &&
-    !pathname.startsWith('/cadastro') &&
-    !pathname.startsWith('/api/youtube/auth')
+    !pathname.startsWith('/cadastro')
   ) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
