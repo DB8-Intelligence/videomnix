@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { canUseSocialFeature } from '@/lib/plans'
-import type { DealActivityInsert, DealActivityType } from '@/types/supabase'
+import type { DealActivityInsert, DealActivityType, Json } from '@/types/supabase'
 
 type Params = { params: { id: string } }
 
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest, { params }: Params) {
   const body = await req.json() as {
     type: DealActivityType
     content?: string
-    metadata?: Record<string, unknown>
+    metadata?: Json
   }
 
   const VALID_TYPES: DealActivityType[] = [

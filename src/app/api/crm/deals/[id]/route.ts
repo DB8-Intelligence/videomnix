@@ -49,7 +49,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     .from('users').select('id').eq('auth_id', user.id).single()
   if (!profile) return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 })
 
-  const body = await req.json() as DealUpdate & { stage?: DealStage }
+  const body = await req.json() as DealUpdate & { stage?: DealStage } & Record<string, unknown>
 
   // Buscar stage atual para registrar mudança
   const { data: current } = await supabase
@@ -58,8 +58,8 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     .eq('id', params.id)
     .single()
 
-  delete (body as any).user_id
-  delete (body as any).id
+  delete body.user_id
+  delete body.id
 
   const { data, error } = await supabase
     .from('deals')

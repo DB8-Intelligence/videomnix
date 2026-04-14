@@ -42,14 +42,14 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   const check = await canUseSocialFeature(user.id, 'crm')
   if (!check.allowed) return NextResponse.json({ error: check.reason }, { status: 403 })
 
-  const body = await req.json() as BrandUpdate
+  const body = await req.json() as BrandUpdate & Record<string, unknown>
 
   // Impedir alteração de campos protegidos
-  delete (body as any).user_id
-  delete (body as any).id
-  delete (body as any).total_deals
-  delete (body as any).total_revenue
-  delete (body as any).avg_deal_value
+  delete body.user_id
+  delete body.id
+  delete body.total_deals
+  delete body.total_revenue
+  delete body.avg_deal_value
 
   const { data, error } = await supabase
     .from('brands')
