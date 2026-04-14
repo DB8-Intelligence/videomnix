@@ -255,14 +255,18 @@ CREATE TABLE IF NOT EXISTS analytics_snapshots (
   rpm                 numeric(8,2)  DEFAULT 0,
 
   top_posts           jsonb DEFAULT '[]',
-  snapshotted_at      timestamptz DEFAULT now(),
-
-  UNIQUE(user_id, social_account_id, platform, period,
-    date_trunc('day', snapshotted_at))
+  snapshotted_at      timestamptz DEFAULT now()
 );
 
 CREATE INDEX IF NOT EXISTS idx_analytics_snapshots_user
   ON analytics_snapshots(user_id, platform, period, snapshotted_at DESC);
+
+-- UNIQUE por dia (expressões não são permitidas em UNIQUE constraint inline)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_analytics_snapshots_unique_day
+  ON analytics_snapshots(
+    user_id, social_account_id, platform, period,
+    (date_trunc('day', snapshotted_at))
+  );
 
 -- ============================================================
 -- 10. CONTENT_TEMPLATES — Templates de roteiro/legenda
